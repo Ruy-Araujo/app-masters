@@ -152,17 +152,23 @@ export default function Cards(props) {
           pokemon.sprites.other["official-artwork"].front_default;
 
         return (
-          <Card key={pokemonID} theme={backgrounForType(pokemonType)}>
+          <Card key={pokemonID + "a"} theme={backgrounForType(pokemonType)}>
             <div className="favoriteContainer">
               <Rating
                 defaultValue={0}
                 max={1}
-                name={pokemonID + "a"}
                 size="large"
+                name={pokemonID + "rating"}
               />
             </div>
+
             <div className="imgContainer">
-              <Image src={pokemonPic} alt={pokemon.name} layout="fill" />
+              <Image
+                src={pokemonPic}
+                alt={pokemon.name}
+                layout="fill"
+                placeholder="blur"
+              />
             </div>
             <ContentWrapper>
               <h5 className="title">{formatedName(pokemon)}</h5>
@@ -170,7 +176,10 @@ export default function Cards(props) {
               <div className="typeContainer">
                 {pokemon.types.map((e) => {
                   return (
-                    <TypeContainer theme={backgrounForType(e.type.name)}>
+                    <TypeContainer
+                      theme={backgrounForType(e.type.name)}
+                      key={pokemonID + e.type.name}
+                    >
                       {e.type.name.toUpperCase()}
                     </TypeContainer>
                   );
@@ -186,13 +195,9 @@ export default function Cards(props) {
 
               <div className="footer">
                 Rate
-                <Rating
-                  defaultValue={0}
-                  name={pokemonID + "b"}
-                  className="rating"
-                />
+                <Rating defaultValue={0} className="rating" />
                 Gotcha
-                <Switch color="primary" name={pokemonID + "c"} />
+                <Switch color="primary" />
               </div>
             </ContentWrapper>
           </Card>
