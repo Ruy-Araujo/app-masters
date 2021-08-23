@@ -10,14 +10,14 @@ The project consist in create a app that list your favorite pokemons.
 
 You can see pokemon type, rate and mark if are captured.
 
-You can see a deploy [here]().
+You can see a deploy [here](https://app-masters.vercel.app/).
 
 ## Features
 
 - [x] Add Pókemon
 - [x] Favorite System
 - [x] Rate System
-- [ ] LocalStorage
+- [Partial] LocalStorage
 - [ ] Orderby System
 - [ ] Filter System
 
@@ -60,6 +60,7 @@ The application should be up and running at [http://localhost:3000](http://local
 - [StyledComponents](https://styled-components.com/)
 - [PokéAPI](https://pokeapi.co/)
 - [Material UI](https://material-ui.com/)
+- [Nookies](https://github.com/maticzav/nookies)
 
 ## 🧑‍🎨 Autor
 
