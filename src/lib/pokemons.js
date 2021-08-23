@@ -49,3 +49,41 @@ export function backgrounGradient(pokemonType) {
   return `${backgrounForType(pokemonType)}B3`;
 }
 
+/* 
+Diseble for precaution
+
+This block if for future implementation, to store favorite,rate and gotcha status of user
+
+ const initialState = {
+          id: pokemonID,
+          favorite: null,
+          rate: null,
+          gotcha: null,
+        };
+        
+const [state, dispatch] = useReducer(reducer, initialState);
+
+        function reducer(state, action) {
+          switch (action.type) {
+            case "setFavorite":
+              return { ...state, favorite: action.favorite };
+            case "setRate":
+              return { ...state, rate: action.rate };
+            case "setGotcha":
+              return { ...state, gotcha: action.gotcha };
+            default:
+              return state;
+          }
+        }
+
+        const setFavorite = (value) => {
+          dispatch({ type: "setFavorite", favorite: value });
+        };
+
+        const setRate = (value) => {
+          dispatch({ type: "setRate", rate: value });
+        };
+
+        const setGotcha = (value) => {
+          dispatch({ type: "setGotch", gotcha: value });
+        }; */

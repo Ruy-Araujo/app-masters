@@ -1,6 +1,6 @@
 # App-Masters Interview
 
-This is a interview project of [App Masters](https://appmasters.io/pt/)
+This is an interview project of [App Masters](https://appmasters.io/pt/)
 
 ![cover](media/cover.gif)
 

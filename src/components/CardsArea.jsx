@@ -7,6 +7,7 @@ import { sortPokemons, formatName, backgrounGradient } from "../lib/pokemons";
 import TypeWrapper from "./TypeWrapper";
 import Favorite from "./Favorite";
 import { useReducer } from "react";
+import { setCookie } from "nookies";
 
 const CardsArea = styled.ul`
   padding-left: 0;
@@ -101,53 +102,12 @@ export default function Cards(props) {
         const pokemonPic =
           pokemon.sprites.other["official-artwork"].front_default;
 
-        const initialState = {
-          id: pokemonID,
-          favorite: null,
-          rate: null,
-          gotcha: null,
-        };
+       
 
-        const [state, dispatch] = useReducer(reducer, initialState);
-
-        function reducer(state, action) {
-          switch (action.type) {
-            case "setId":
-              return { ...state, id: action.id };
-            case "setFavorite":
-              return { ...state, favorite: action.favorite };
-            case "setRate":
-              return { ...state, rate: action.rate };
-            case "setGotcha":
-              return { ...state, gotcha: action.gotcha };
-            default:
-              return state;
-          }
-        }
-
-        const setFavorite = (value) => {
-          dispatch({ type: "setFavorite", favorite: value });
-        };
-
-        const setRate = (value) => {
-          dispatch({ type: "setRate", rate: value });
-        };
-
-        const setGotcha = (value) => {
-          dispatch({ type: "setGotch", gotcha: value });
-        };
-
-        const setId = (value) => {
-          dispatch({ type: "setId", id: pokemonID });
-        };
-
-        useEffect(() => {
-          console.log(state);
-        }, [state]);
 
         return (
           <Card key={pokemonID + "card"} theme={backgrounGradient(pokemonType)}>
-            <Favorite id={pokemonID} set={setFavorite} />
+            <Favorite name={"favorite" + pokemonID} />
 
             <div className="imgContainer">
               <Image
@@ -175,19 +135,10 @@ export default function Cards(props) {
                 <Rating
                   defaultValue={0}
                   className="rating"
-                  name={pokemonID + "rating"}
-                  onChange={(event, newValue) => {
-                    setRate(newValue);
-                  }}
+                  name={"rate" + pokemonID}
                 />
                 Gotcha
-                <Switch
-                  color="primary"
-                  name={pokemonID + "gotcha"}
-                  onChange={(event) => {
-                    setGotcha(event.target.checked);
-                  }}
-                />
+                <Switch color="primary" name={"gotcha" + pokemonID} />
               </div>
             </ContentWrapper>
           </Card>
