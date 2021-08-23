@@ -43,3 +43,9 @@ export function backgrounForType(pokemonType) {
     return pokemonTypeColor["default"];
   }
 }
+
+// Return backgroun color with #hex alfa aplyed
+export function backgrounGradient(pokemonType) {
+  return `${backgrounForType(pokemonType)}B3`;
+}
+

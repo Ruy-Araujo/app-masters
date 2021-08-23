@@ -1,10 +1,12 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Rating from "@material-ui/lab/Rating";
 import Switch from "@material-ui/core/Switch";
-import { sortPokemons, formatName, backgrounForType } from "../lib/pokemons";
+import { sortPokemons, formatName, backgrounGradient } from "../lib/pokemons";
 import TypeWrapper from "./TypeWrapper";
+import Favorite from "./Favorite";
+import { useReducer } from "react";
 
 const CardsArea = styled.ul`
   padding-left: 0;
@@ -18,7 +20,11 @@ const Card = styled.li`
   width: 300px;
   height: 550px;
   border-radius: 12px;
-  background-color: ${(props) => props.theme};
+  background: linear-gradient(
+    to right,
+    ${(props) => props.theme} 0%,
+    ${(props) => props.theme} 100%
+  );
   margin: 10px;
   box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25);
   position: relative;
@@ -95,16 +101,53 @@ export default function Cards(props) {
         const pokemonPic =
           pokemon.sprites.other["official-artwork"].front_default;
 
+        const initialState = {
+          id: pokemonID,
+          favorite: null,
+          rate: null,
+          gotcha: null,
+        };
+
+        const [state, dispatch] = useReducer(reducer, initialState);
+
+        function reducer(state, action) {
+          switch (action.type) {
+            case "setId":
+              return { ...state, id: action.id };
+            case "setFavorite":
+              return { ...state, favorite: action.favorite };
+            case "setRate":
+              return { ...state, rate: action.rate };
+            case "setGotcha":
+              return { ...state, gotcha: action.gotcha };
+            default:
+              return state;
+          }
+        }
+
+        const setFavorite = (value) => {
+          dispatch({ type: "setFavorite", favorite: value });
+        };
+
+        const setRate = (value) => {
+          dispatch({ type: "setRate", rate: value });
+        };
+
+        const setGotcha = (value) => {
+          dispatch({ type: "setGotch", gotcha: value });
+        };
+
+        const setId = (value) => {
+          dispatch({ type: "setId", id: pokemonID });
+        };
+
+        useEffect(() => {
+          console.log(state);
+        }, [state]);
+
         return (
-          <Card key={pokemonID + "a"} theme={backgrounForType(pokemonType)}>
-            <div className="favoriteContainer">
-              <Rating
-                defaultValue={0}
-                max={1}
-                size="large"
-                name={pokemonID + "favorite"}
-              />
-            </div>
+          <Card key={pokemonID + "card"} theme={backgrounGradient(pokemonType)}>
+            <Favorite id={pokemonID} set={setFavorite} />
 
             <div className="imgContainer">
               <Image
@@ -115,6 +158,7 @@ export default function Cards(props) {
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP0rwcAASMA0Na265IAAAAASUVORK5CYII="
               />
             </div>
+
             <ContentWrapper>
               <h5 className="title">{formatName(pokemon)}</h5>
               <TypeWrapper pokemon={pokemon} />
@@ -132,9 +176,18 @@ export default function Cards(props) {
                   defaultValue={0}
                   className="rating"
                   name={pokemonID + "rating"}
+                  onChange={(event, newValue) => {
+                    setRate(newValue);
+                  }}
                 />
                 Gotcha
-                <Switch color="primary" name={pokemonID + "gotcha"} />
+                <Switch
+                  color="primary"
+                  name={pokemonID + "gotcha"}
+                  onChange={(event) => {
+                    setGotcha(event.target.checked);
+                  }}
+                />
               </div>
             </ContentWrapper>
           </Card>

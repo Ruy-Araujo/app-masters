@@ -5,7 +5,7 @@ import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { setCookie, parseCookies } from "nookies";
-import { getPokemon } from "../lib/pokemons";
+
 
 const Header = styled.div`
   width: 100%;
