@@ -1,12 +1,28 @@
-export async function getPokemon(id = "1") {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-  const data = await res.json();
-  return data;
-}
+//Sort pokemons - NOT implemented
+export function sortPokemons(pokemonList, sortBy = "id", asc = true) {
+  switch (sortBy) {
+    case "id":
+      if (asc) {
+        return pokemonList.sort((poke1, poke2) =>
+          poke1.id > poke2.id ? 1 : -1
+        );
+      }
+      return pokemonList
+        .sort((poke1, poke2) => (poke1.id > poke2.id ? 1 : -1))
+        .reverse();
 
-//Sort pokemons by ID ASC
-export function sortPokemons(pokemonList) {
-  return pokemonList.sort((poke1, poke2) => (poke1.id > poke2.id ? 1 : -1));
+    case "name":
+      if (asc) {
+        return pokemonList.sort((poke1, poke2) =>
+          poke1.name > poke2.name ? 1 : -1
+        );
+      }
+      return pokemonList
+        .sort((poke1, poke2) => (poke1.name > poke2.name ? 1 : -1))
+        .reverse();
+    default:
+      return pokemonList;
+  }
 }
 
 // Format pokemon name to concat ID and Name

@@ -1,13 +1,10 @@
 import styled from "styled-components";
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Rating from "@material-ui/lab/Rating";
 import Switch from "@material-ui/core/Switch";
 import { sortPokemons, formatName, backgrounGradient } from "../lib/pokemons";
 import TypeWrapper from "./TypeWrapper";
 import Favorite from "./Favorite";
-import { useReducer } from "react";
-import { setCookie } from "nookies";
 
 const CardsArea = styled.ul`
   padding-left: 0;
@@ -28,12 +25,19 @@ const Card = styled.li`
   );
   margin: 10px;
   box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25);
+
   position: relative;
   overflow: hidden;
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
   justify-content: flex-start;
+
+  transition: all 0.2s ease-in-out;
+
+  :hover {
+    transform: scale(1.05);
+  }
 
   .favoriteContainer {
     width: 100%;
@@ -96,14 +100,11 @@ const ContentWrapper = styled.div`
 export default function Cards(props) {
   return (
     <CardsArea>
-      {sortPokemons(props.pokemons).map((pokemon) => {
+      {sortPokemons(props.pokemons, "id", true).map((pokemon) => {
         const pokemonID = pokemon.id;
         const pokemonType = pokemon.types[0].type.name;
         const pokemonPic =
           pokemon.sprites.other["official-artwork"].front_default;
-
-       
-
 
         return (
           <Card key={pokemonID + "card"} theme={backgrounGradient(pokemonType)}>

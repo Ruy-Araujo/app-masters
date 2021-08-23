@@ -27,6 +27,10 @@ const ContentWrapper = styled.div`
     width: 400px;
   }
 
+  .inputContainer:first-child div {
+    margin-bottom: 10px;
+  }
+
   @media (max-width: 690px) {
     .title {
       font-size: 1.2em;
@@ -39,35 +43,12 @@ const ContentWrapper = styled.div`
       width: 90vw;
     }
   }
-  .inputContainer:first-child div {
-    margin-bottom: 10px;
-  }
 `;
 
 export default function Home(props) {
   const [pokemons, setPokemons] = useState([...props.USER_POKEMONS]);
+  const [sort, setSort] = useState("A");
 
-  const [test, setTest] = useState([]);
-
-  const set = (obj) => {
-    if (test.find((x) => x.id === obj.id)) {
-      function replaceObject(array, objId, newObj) {
-        const index = array.findIndex((x) => x.id === objId);
-        if (index >= 0) {
-          array[index] = newObj;
-        } else {
-          array = [...array, newObj];
-        }
-        return array;
-      }
-
-      console.log("test", test);
-      const array = replaceObject(test, obj.id, obj);
-      setTest(array);
-    } else {
-      setTest([...test, obj]);
-    }
-  };
   /* Save user pokemons locally */
   useEffect(() => {
     const list = pokemons.map((e) => e.id);
@@ -83,14 +64,6 @@ export default function Home(props) {
     );
   });
 
-  useEffect(() => {
-    console.log("test", test);
-    setCookie(null, "USER_TEST", JSON.stringify(test), {
-      maxAge: 86400 * 7,
-      path: "/",
-    });
-  }, [test]);
-
   function getPokemonByName(name = "pikachu") {
     fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
       .then((resp) => resp.json())
@@ -103,6 +76,7 @@ export default function Home(props) {
       .then((pokemon) => setPokemons([...pokemons, pokemon]));
   }
 
+  //Veriy if pokemon is alredy in list
   function havePokemon(pokemon) {
     const name = pokemons.some((e) => e.name === pokemon);
     const id = pokemons.some((e) => e.id == pokemon);
@@ -111,7 +85,7 @@ export default function Home(props) {
 
   return (
     <>
-      <Container>
+      <Container className="header">
         <ContentWrapper>
           <div className="title">
             This is an interview project, where you can list your favorite
@@ -119,6 +93,7 @@ export default function Home(props) {
             <br /> Start to add some Pokémon, typing in box below a Pokémon
             name, e.g. Pikachu
           </div>
+
           <form
             className="form"
             onSubmit={(e) => {
@@ -149,13 +124,16 @@ export default function Home(props) {
             </div>
           </form>
         </ContentWrapper>
-        <CardsArea pokemons={pokemons} setTest={set} />
+      </Container>
+
+      <Container className="body">
+        <CardsArea pokemons={pokemons} />
       </Container>
     </>
   );
 }
 
-//Render after page load, only in server side
+//Render before page load, only in server side.
 export async function getServerSideProps(context) {
   //get user cookie with pokemon list
   const cookies = parseCookies(context);
