@@ -3,6 +3,8 @@ import React from "react";
 import Image from "next/image";
 import Rating from "@material-ui/lab/Rating";
 import Switch from "@material-ui/core/Switch";
+import { sortPokemons, formatName, backgrounForType } from "../lib/pokemons";
+import TypeWrapper from "./TypeWrapper";
 
 const CardsArea = styled.ul`
   padding-left: 0;
@@ -64,13 +66,6 @@ const ContentWrapper = styled.div`
     font-style: italic;
   }
 
-  .typeContainer {
-    width: 100%;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-  }
-
   .statsContainer {
     width: 100%;
     height: 150px;
@@ -91,63 +86,12 @@ const ContentWrapper = styled.div`
   }
 `;
 
-const TypeContainer = styled.div`
-  width: 70px;
-  height: 25px;
-  border-radius: 20px;
-  background-color: ${(props) => props.theme};
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  margin: 10px 5px;
-  text-align: center;
-  font-size: 0.9em;
-  line-height: 25px;
-  color: #fafafa;
-`;
-
 export default function Cards(props) {
-  function sortPokemons(pokemonList) {
-    return pokemonList.sort((poke1, poke2) => (poke1.id > poke2.id ? 1 : -1));
-  }
-
-  function formatedName(pokemon) {
-    return `${pokemon.id}. ${
-      pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)
-    }`;
-  }
-
-  function backgrounForType(pokemonType) {
-    const pokemonTypeColor = {
-      default: "#FCFCFC",
-      fire: "#FF0000",
-      water: "#559EDF",
-      grass: "#55DF9E",
-      bug: "#A8B820",
-      electric: "#FFFF00",
-      dragon: "#FF00FF",
-      flying: "#A890F0",
-      fighting: "#C03028",
-      ghost: "#705898",
-      ground: "#E0C068",
-      ice: "#98D8D8",
-      normal: "#A8A878",
-      poison: "#A040A0",
-      psychic: "#F85888",
-      rock: "#B8A038",
-    };
-
-    if (pokemonType in pokemonTypeColor) {
-      return pokemonTypeColor[pokemonType];
-    } else {
-      return pokemonTypeColor["default"];
-    }
-  }
-
   return (
     <CardsArea>
       {sortPokemons(props.pokemons).map((pokemon) => {
         const pokemonID = pokemon.id;
         const pokemonType = pokemon.types[0].type.name;
-
         const pokemonPic =
           pokemon.sprites.other["official-artwork"].front_default;
 
@@ -158,7 +102,7 @@ export default function Cards(props) {
                 defaultValue={0}
                 max={1}
                 size="large"
-                name={pokemonID + "rating"}
+                name={pokemonID + "favorite"}
               />
             </div>
 
@@ -168,23 +112,12 @@ export default function Cards(props) {
                 alt={pokemon.name}
                 layout="fill"
                 placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP0rwcAASMA0Na265IAAAAASUVORK5CYII="
               />
             </div>
             <ContentWrapper>
-              <h5 className="title">{formatedName(pokemon)}</h5>
-
-              <div className="typeContainer">
-                {pokemon.types.map((e) => {
-                  return (
-                    <TypeContainer
-                      theme={backgrounForType(e.type.name)}
-                      key={pokemonID + e.type.name}
-                    >
-                      {e.type.name.toUpperCase()}
-                    </TypeContainer>
-                  );
-                })}
-              </div>
+              <h5 className="title">{formatName(pokemon)}</h5>
+              <TypeWrapper pokemon={pokemon} />
 
               <div className="statsContainer">
                 Quisque pellentesque lectus nec diam ornare aliquet. Phasellus
@@ -195,9 +128,13 @@ export default function Cards(props) {
 
               <div className="footer">
                 Rate
-                <Rating defaultValue={0} className="rating" />
+                <Rating
+                  defaultValue={0}
+                  className="rating"
+                  name={pokemonID + "rating"}
+                />
                 Gotcha
-                <Switch color="primary" />
+                <Switch color="primary" name={pokemonID + "gotcha"} />
               </div>
             </ContentWrapper>
           </Card>

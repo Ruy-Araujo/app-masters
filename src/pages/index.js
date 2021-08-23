@@ -1,9 +1,11 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import CardsArea from "../components/CardsArea";
 import styled from "styled-components";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import { setCookie, parseCookies } from "nookies";
+import { getPokemon } from "../lib/pokemons";
 
 const Header = styled.div`
   width: 100%;
@@ -29,14 +31,28 @@ const Header = styled.div`
   }
 `;
 
-export default function Home() {
-  const [pokemons, setPokemons] = React.useState([]);
+export default function Home(props) {
+  const [pokemons, setPokemons] = useState([...props.USER_POKEMONS]);
+
+  /* Save user pokemons locally */
+  useEffect(() => {
+    const list = pokemons.map((e) => e.id);
+    setCookie(
+      null,
+      "USER_POKEMONS",
+      list,
+      {
+        maxAge: 86400 * 7,
+        path: "/",
+      },
+      [pokemons]
+    );
+  });
 
   function getPokemonByName(name = "pikachu") {
     fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
       .then((resp) => resp.json())
-      .then((pokemon) => setPokemons([...pokemons, pokemon]))
-      .catch((erro) => console.log("deu ruim"));
+      .then((pokemon) => setPokemons([...pokemons, pokemon]));
   }
 
   function getPokemonById(id = "1") {
@@ -64,7 +80,7 @@ export default function Home() {
             onSubmit={(e) => {
               e.preventDefault();
               const dataForm = new FormData(e.target);
-              const pokemon = dataForm.get("pokemon");
+              const pokemon = dataForm.get("inputPokemon").toLowerCase();
               if (pokemon && !havePokemon(pokemon)) {
                 isNaN(pokemon)
                   ? getPokemonByName(pokemon)
@@ -73,8 +89,13 @@ export default function Home() {
             }}
           >
             <div className="inputContainer">
-              <TextField name="pokemon" label="ID or Name" fullWidth={true} />
-              <Button type="submit" variant="contained" color="primary">
+              <TextField name="inputPokemon" label="ID or Name" fullWidth={true} />
+              <Button
+                name="add"
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
                 ADD
               </Button>
             </div>
@@ -84,4 +105,34 @@ export default function Home() {
       </Container>
     </>
   );
+}
+
+//Render after page load, only in server side
+export async function getServerSideProps(context) {
+  //get user cookie with pokemon list
+  const cookies = parseCookies(context);
+
+  const pokemonsList = cookies.USER_POKEMONS
+    ? cookies.USER_POKEMONS.split(",")
+    : [];
+
+  //Fetch all pokemons in list
+  const pokemons = await Promise.all(
+    pokemonsList.map((e) => {
+      return fetch(`https://pokeapi.co/api/v2/pokemon/${e}`);
+    })
+  );
+
+  //Convert all to objects
+  const list = await Promise.all(
+    pokemons.map(async (e) => {
+      return e.json();
+    })
+  );
+
+  return {
+    props: {
+      USER_POKEMONS: list,
+    }, // will be passed to the page component as props
+  };
 }
