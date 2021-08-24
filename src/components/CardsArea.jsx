@@ -100,7 +100,7 @@ const ContentWrapper = styled.div`
 export default function Cards(props) {
   return (
     <CardsArea>
-      {sortPokemons(props.pokemons, "id", true).map((pokemon) => {
+      {props.pokemons.map((pokemon) => {
         const pokemonID = pokemon.id;
         const pokemonType = pokemon.types[0].type.name;
         const pokemonPic =

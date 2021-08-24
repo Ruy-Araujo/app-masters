@@ -8,7 +8,7 @@ export function sortPokemons(pokemonList, sortBy = "id", asc = true) {
         );
       }
       return pokemonList
-        .sort((poke1, poke2) => (poke1.id > poke2.id ? 1 : -1))
+        .sort((poke1, poke2) => (poke1.id < poke2.id ? 1 : -1))
         .reverse();
 
     case "name":
@@ -18,8 +18,21 @@ export function sortPokemons(pokemonList, sortBy = "id", asc = true) {
         );
       }
       return pokemonList
-        .sort((poke1, poke2) => (poke1.name > poke2.name ? 1 : -1))
+        .sort((poke1, poke2) => (poke1.name < poke2.name ? 1 : -1))
         .reverse();
+
+    case "type":
+      if (asc) {
+        return pokemonList.sort((poke1, poke2) =>
+          poke1.types[0].type.name > poke2.types[0].type.name ? 1 : -1
+        );
+      }
+      return pokemonList
+        .sort((poke1, poke2) =>
+          poke1.types[0].type.name < poke2.types[0].type.name ? 1 : -1
+        )
+        .reverse();
+
     default:
       return pokemonList;
   }

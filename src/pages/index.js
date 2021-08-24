@@ -5,6 +5,13 @@ import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { setCookie, parseCookies } from "nookies";
+import { sortPokemons } from "../lib/pokemons";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import ToggleButton from "@material-ui/lab/ToggleButton";
+import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import SortByAlphaIcon from "@material-ui/icons/SortByAlpha";
+import FormatListNumberedIcon from "@material-ui/icons/FormatListNumbered";
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 
 const ContentWrapper = styled.div`
   width: 100%;
@@ -45,24 +52,43 @@ const ContentWrapper = styled.div`
   }
 `;
 
+const BodyWrapper = styled.div`
+  margin-top: 35px;
+
+  @media (max-width: 690px) {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+  }
+`;
+
 export default function Home(props) {
   const [pokemons, setPokemons] = useState([...props.USER_POKEMONS]);
-  const [sort, setSort] = useState("A");
+  const [alignment, setAlignment] = useState(props.USER_PREFERENCES);
 
   /* Save user pokemons locally */
   useEffect(() => {
     const list = pokemons.map((e) => e.id);
-    setCookie(
-      null,
-      "USER_POKEMONS",
-      list,
-      {
-        maxAge: 86400 * 7,
-        path: "/",
-      },
-      [pokemons]
-    );
+
+    setCookie(null, "USER_PREFERENCES", alignment, {
+      maxAge: 86400 * 7,
+      path: "/",
+    });
+
+    setCookie(null, "USER_POKEMONS", list, {
+      maxAge: 86400 * 7,
+      path: "/",
+    });
   });
+
+  const handleAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
+
+  const handleSort = (str) => {
+    const pokeList = sortPokemons(pokemons, str, true);
+    setPokemons(pokeList);
+  };
 
   function getPokemonByName(name = "pikachu") {
     fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
@@ -110,7 +136,7 @@ export default function Home(props) {
             <div className="inputContainer">
               <TextField
                 name="inputPokemon"
-                label="ID or Name"
+                label="Name or Number"
                 fullWidth={true}
               />
               <Button
@@ -127,7 +153,38 @@ export default function Home(props) {
       </Container>
 
       <Container className="body">
-        <CardsArea pokemons={pokemons} />
+        <BodyWrapper>
+          <ToggleButtonGroup
+            value={alignment}
+            exclusive
+            onChange={handleAlignment}
+            aria-label="text alignment"
+          >
+            <ToggleButton
+              value="id"
+              aria-label="sort by id"
+              onClick={() => handleSort("id")}
+            >
+              <FormatListNumberedIcon /> | number
+            </ToggleButton>
+            <ToggleButton
+              value="name"
+              aria-label="sort by name"
+              onClick={() => handleSort("name")}
+            >
+              <SortByAlphaIcon />| name
+            </ToggleButton>
+            <ToggleButton
+              value="type"
+              aria-label="sort by type"
+              onClick={() => handleSort("type")}
+            >
+              type
+            </ToggleButton>
+          </ToggleButtonGroup>
+
+          <CardsArea pokemons={pokemons} />
+        </BodyWrapper>
       </Container>
     </>
   );
@@ -141,6 +198,10 @@ export async function getServerSideProps(context) {
   const pokemonsList = cookies.USER_POKEMONS
     ? cookies.USER_POKEMONS.split(",")
     : [];
+
+  const preferences = cookies.USER_PREFERENCES
+    ? cookies.USER_PREFERENCES
+    : "id";
 
   //Fetch all pokemons in list
   const pokemons = await Promise.all(
@@ -159,6 +220,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       USER_POKEMONS: list,
+      USER_PREFERENCES: preferences,
     }, // will be passed to the page component as props
   };
 }
